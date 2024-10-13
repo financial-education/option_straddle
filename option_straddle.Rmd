@@ -1,0 +1,213 @@
+---
+title: "Long Straddle"
+logo: misq.png
+<!-- css: 5min_mod.css -->
+<!-- output: ioslides_presentation -->
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Options Review
+
+Remember that an American call option grants the owner the right to buy a share of the underlying stock for the strike price anytime before expiration.
+
+>- So, you would want to purchase a call option if you expect the price of the stock to increase
+
+And recall that an American put option grants the owner the right to sell a share of the underlying stock for the strike price anytime before expiration.
+
+>- So, you want to purchase a put option if you expect the price of the stock to decrease
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
+
+## But...
+
+What if instead of betting on the direction of the stock's movemement, you want to bet on the size of the stock's movement? 
+
+Take the recent Brexit vote, for example. Before the vote, one could have reasonably expected the market to move either up or down (potentially drastically) in response to the outcome.
+
+>- In this case, the long straddle would make for a good strategy
+>- Long straddle allows you to bet that a stock price will move more than expected
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
+
+## What is the Long Straddle?
+
+The long straddle is the strategy of purchasing both call and put options at the exact same strike price and expiration date.
+
+Going back to the Brexit example, a call option would've turned a profit if the UK voted Stay and the market went up. Conversely, if the UK voted Leave and the market went down (as it did), a put option would've turned a profit.
+
+>- Since there was no way of knowing which way the vote would go beforehand, the long straddle would've been a good strategy to take advantage of a large market shift in either direction.
+    + Long straddle is a bet on volatility
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div>
+
+## Too Good to Be True?
+
+The long straddle may seem like an infallible strategy for an event like the Brexit vote, but in reality, this is not quite the case.
+
+- To turn a profit on the straddle, the underlying stock must move more than the market expects it to.
+
+Option Premiums factor in expected market volatility, so in the case of the Brexit vote, option premiums increased significantly before the vote because of an expected increase in volatility after the vote.
+
+- The higher the option premiums, the more the underlying stock price must move in order to make money.
+
+## Interactive Slide
+
+In the next slide, you'll be able to select a strike price and option premium then view the corresponding payoff diagrams for the long straddle.  For simplicity we'll assume the call and put option have the same premium---so you only have to enter one.
+
+Note that the breakeven points for the straddle occur when the underlying stock price 1) falls below strike price - total price of premiums and 2) rises above strike price + total price of premiums
+
+- The shaded regions represent the areas in which the long straddle is profitable
+
+- Slide the Option Premium slider to the right to see how an increase in option prices affects the breakeven points and regions of profitability
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
+
+## <!--- Payoff Diagrams -->
+
+```{r, echo=FALSE}
+##ui.R
+shinyApp(
+
+ui = shinyUI(fluidPage(
+  
+  titlePanel(h1("Payoff Diagrams", align = "center")),
+  
+  fluidRow(
+    column(6,
+         plotOutput("valueplot")),
+    column(6,
+           plotOutput("plplot"))
+  ),
+  
+  hr(),
+  
+  fluidRow(
+
+    column(3, offset = 1,
+
+           radioButtons("strat", "Option Bundle", c("Call Option", "Put Option", "Long Straddle"), selected = "Long Straddle")
+           ),
+    column(4,
+           sliderInput("strike", "Put/Call Option Strike Price", min = 1, max = 100, value = 60)
+           ),
+    column(3,
+           sliderInput("premium", "Option Premium", min = 1, max = 20, value = 10)
+          )
+  )
+)),
+
+server = shinyServer(function(input, output) {
+   
+  output$valueplot <- renderPlot({
+    
+    x <- 0:150
+    callPayoff <- vector(mode = "integer", length = length(x))
+    putPayoff <- vector(mode = "integer", length = length(x))
+    
+    for (i in x){
+      if (i < input$strike){
+        callPayoff[i+1] <- 0
+      } else
+        callPayoff[i+1] <- i - input$strike
+      if (i < input$strike){
+        putPayoff[i+1] <- input$strike - i
+      } else
+        putPayoff[i+1] <- 0
+    }
+    ##Graph put (orange)/call (blue) option payoffs, dashed line when 0, solid line otherwise
+    if (input$strat == "Long Straddle"){
+      plot(x, callPayoff, type = "n", col = "dodgerblue", xlab = "Underlying Stock Price", ylab = "Value", xlim = c(0,120))
+      segments(0,0,input$strike, 0, lty = "dashed", col = "dodgerblue")
+      segments(input$strike, 0, 120, 120 - input$strike, col = "dodgerblue", lwd = 2)
+      lines(x, putPayoff, type = "n", col = "darkorange")
+      segments(0, input$strike, input$strike, 0, col = "darkorange", lwd = 2)
+      segments(input$strike, 0, 120, 0, lty = "dashed", col = "darkorange")
+    } else if (input$strat == "Call Option"){
+      plot(x, callPayoff, type = "l", lwd = 2, col = "dodgerblue", xlab = "Underlying Stock Price", ylab = "Value", xlim = c(0,120))
+    } else if (input$strat == "Put Option"){
+      plot(x, putPayoff, type = "l", lwd = 2, col = "darkorange", xlab = "Underlying Stock Price", ylab = "Value", xlim = c(0,120))
+    }
+    
+    legend("top", border = "grey", c("Call Option Intrinsic Value", "Put Option Intrinsic Value"), lty = c("solid", "solid"), col = c("dodgerblue", "darkorange"), lwd = c(2,2))
+    
+  })
+  
+  output$plplot <- renderPlot({
+    
+    x <- 0:150
+    ## Define coordinate vectors for shaded regions
+    putshade.x <- c(0,0,input$strike - 2*input$premium)
+    putshade.y <- c(input$strike - 2*input$premium, 0, 0)
+    callshade.x <- c(input$strike + 2*input$premium, 120, 120)
+    callshade.y <- c(0,0, 120 - input$strike - 2*input$premium)
+    
+    if (input$strat == "Long Straddle"){
+      plot(x, x, type = "n", xlab = "Underlying Stock Price", ylab = "Profit/Loss", xlim = c(0,120), ylim = c(-40, 50))
+      segments(0, input$strike - 2*input$premium, input$strike, -2*input$premium, col = "darkorange", lwd = 2)
+      segments(input$strike, -2*input$premium, 120, 120 - input$strike - 2*input$premium, col = "dodgerblue", lwd = 2)
+      segments(0,0,150,0)
+      ## Label Strike Price
+      points(input$strike, 0, pch = 20)
+      segments(input$strike, 0, input$strike, -2*input$premium, lty = "dashed", lwd = 0.5)
+      text(input$strike, 0, labels = "Strike Price", pos = 3, cex = .7)
+      ## Draw arrows and label upside/downside break even points
+      arrows(input$strike - 2*input$premium - 6, -6, input$strike - 2*input$premium - 1, -1, angle = 45, length = .1)
+      arrows(input$strike + 2*input$premium + 6, -6, input$strike + 2*input$premium + 1, -1, angle = 45, length = .1)
+      text(input$strike - 2*input$premium - 6, -6, labels = "Downside BEP", cex = .6, pos = c(1,2))
+      text(input$strike + 2*input$premium + 6, -6, labels = "Upside BEP", cex = .6, pos = c(1,4))
+      ## Shade in profitable regions
+      polygon(putshade.x, putshade.y, col = "chocolate1", density = 20, border = NA)
+      polygon(callshade.x, callshade.y, col = "skyblue", density = 20, border = NA, angle = 135)
+    } else if (input$strat == "Call Option"){
+      plot(x, x, type = "n", xlab = "Underlying Stock Price", ylab = "Profit/Loss", xlim = c(0,120), ylim = c(-25, 50))
+      segments(0, -input$premium, input$strike, -input$premium, col = "dodgerblue", lwd = 2)
+      segments(input$strike, -input$premium, 120, 120 - input$strike - input$premium, col = "dodgerblue", lwd = 2)
+      segments(0,0,150,0)
+    } else if (input$strat == "Put Option"){
+      plot(x, x, type = "n", xlab = "Underlying Stock Price", ylab = "Profit/Loss", xlim = c(0,120), ylim = c(-25, 50))
+      segments(0, input$strike - input$premium, input$strike, -input$premium, col = "darkorange", lwd = 2)
+      segments(input$strike, -input$premium, 150, -input$premium, col = "darkorange", lwd = 2)
+      segments(0,0,150,0)
+    }
+    
+  })
+  
+})
+)
+```
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
+
+## Long Straddle Analysis
+
+In the payoff diagrams you can see that while loss potential is limited, the profit potential is unlimited.
+
+- Loss can never exceed the total price of premiums paid
+    + Note that the maximum loss occurs when Price of Underlying Stock = Strike Price
+- Unlimited upside profit potential
+- Limited, but substantial downside profit potential
+
+What effect do you think stock volatility has on the long straddle?
+
+>- Since the long straddle benefits from actual volatility being higher than what the market expected, you can potentially earn more (or lost more) if the stock's volatility is greater (volatility of volatility).
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div>
+
+## Short Straddle
+
+The person who takes the other side of the long straddle, own a short straddle.  Since derivatives are *zero-sum games*, the payoff/profit on the short straddle is exactly the opposite (-1 times) the payoff/profit on the long straddle.
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div>
+
+## Credits and Collaboration
+
+Click the following links to see the [code](https://github.com/FinancialMarkets/5MinuteFinance/blob/master/Options/option_straddle/option_straddle.Rmd), [authors of this presentation](https://github.com/FinancialMarkets/5MinuteFinance/blame/master/Options/option_straddle/option_straddle.Rmd), and [all the collaborators who have contributed to 5-Minute Finance](https://github.com/FinancialMarkets/5MinuteFinance/graphs/contributors).
+
+If you would like to make any additions or corrections to this presentation, visit our [GitHub repository page](https://github.com/FinancialMarkets/5MinuteFinance#how-to-contribute) to learn more about how to contribute.
+
+<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 

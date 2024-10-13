@@ -1,9 +1,15 @@
 ---
 title: "Long Straddle"
-logo: misq.png
-<!-- css: 5min_mod.css -->
-<!-- output: ioslides_presentation -->
-output: html_document
+author: "Matt Brigida"
+output:
+#  rmdformats::downcute:
+  rmdformats::html_clean:
+    self_contained: true
+    thumbnails: false
+    lightbox: true
+    gallery: false
+    highlight: tango
+#    downcute_theme: "chaos"
 runtime: shiny
 ---
 
@@ -37,7 +43,7 @@ The long straddle is the strategy of purchasing both call and put options at the
 
 Going back to the Brexit example, a call option would've turned a profit if the UK voted Stay and the market went up. Conversely, if the UK voted Leave and the market went down (as it did), a put option would've turned a profit.
 
->- Since there was no way of knowing which way the vote would go beforehand, the long straddle would've been a good strategy to take advantage of a large market shift in either direction.
+>- Since there was no way of knowing which way the vote would go beforehand, the long straddle may have been a good strategy to take advantage of a large market shift in either direction.
     + Long straddle is a bet on volatility
 
 
@@ -172,7 +178,8 @@ server = shinyServer(function(input, output) {
     
   })
   
-})
+}),
+options = list(height = 1000) 
 )
 ```
 
@@ -188,7 +195,7 @@ In the payoff diagrams you can see that while loss potential is limited, the pro
 
 What effect do you think stock volatility has on the long straddle?
 
->- Since the long straddle benefits from actual volatility being higher than what the market expected, you can potentially earn more (or lost more) if the stock's volatility is greater (volatility of volatility).
+>- Since the long straddle benefits from actual volatility being higher than what the market expected, you can potentially earn more (or lose more) if the stock's volatility is greater (volatility of volatility).
 
 
 ## Short Straddle

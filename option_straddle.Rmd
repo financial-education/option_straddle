@@ -1,6 +1,6 @@
 ---
 title: "Long Straddle"
-author: "Matt Brigida"
+author: "An Undergrad Student"
 output:
 #  rmdformats::downcute:
   rmdformats::html_clean:
@@ -16,6 +16,8 @@ runtime: shiny
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
+*Note, this presentation was created by a student (who went on to work at an Investment Bank).  Here is the original file: https://github.com/FinancialMarkets/5MinuteFinance/blob/master/Options/option_straddle/option_straddle.Rmd*
 
 ## Options Review
 

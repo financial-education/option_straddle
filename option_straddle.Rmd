@@ -21,18 +21,15 @@ And recall that an American put option grants the owner the right to sell a shar
 
 >- So, you want to purchase a put option if you expect the price of the stock to decrease
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
-
 ## But...
 
-What if instead of betting on the direction of the stock's movemement, you want to bet on the size of the stock's movement? 
+What if instead of betting on the direction of the stock's movement, you want to bet on the size of the stock's movement? 
 
 Take the recent Brexit vote, for example. Before the vote, one could have reasonably expected the market to move either up or down (potentially drastically) in response to the outcome.
 
 >- In this case, the long straddle would make for a good strategy
 >- Long straddle allows you to bet that a stock price will move more than expected
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
 
 ## What is the Long Straddle?
 
@@ -43,7 +40,6 @@ Going back to the Brexit example, a call option would've turned a profit if the 
 >- Since there was no way of knowing which way the vote would go beforehand, the long straddle would've been a good strategy to take advantage of a large market shift in either direction.
     + Long straddle is a bet on volatility
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div>
 
 ## Too Good to Be True?
 
@@ -57,7 +53,7 @@ Option Premiums factor in expected market volatility, so in the case of the Brex
 
 ## Interactive Slide
 
-In the next slide, you'll be able to select a strike price and option premium then view the corresponding payoff diagrams for the long straddle.  For simplicity we'll assume the call and put option have the same premium---so you only have to enter one.
+In the next slide, you'll be able to select a strike price and option premium then view the corresponding payoff diagrams for the long straddle.  For simplicity we'll assume the call and put option have the same premium---so you only have to enter one.  Generally, however, the call and put price will have different premia.
 
 Note that the breakeven points for the straddle occur when the underlying stock price 1) falls below strike price - total price of premiums and 2) rises above strike price + total price of premiums
 
@@ -65,7 +61,6 @@ Note that the breakeven points for the straddle occur when the underlying stock 
 
 - Slide the Option Premium slider to the right to see how an increase in option prices affects the breakeven points and regions of profitability
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
 
 ## <!--- Payoff Diagrams -->
 
@@ -76,15 +71,6 @@ shinyApp(
 ui = shinyUI(fluidPage(
   
   titlePanel(h1("Payoff Diagrams", align = "center")),
-  
-  fluidRow(
-    column(6,
-         plotOutput("valueplot")),
-    column(6,
-           plotOutput("plplot"))
-  ),
-  
-  hr(),
   
   fluidRow(
 
@@ -98,6 +84,15 @@ ui = shinyUI(fluidPage(
     column(3,
            sliderInput("premium", "Option Premium", min = 1, max = 20, value = 10)
           )
+  ),
+  
+  hr(),
+  
+  fluidRow(
+    column(6,
+         plotOutput("valueplot")),
+    column(6,
+           plotOutput("plplot"))
   )
 )),
 
@@ -181,7 +176,6 @@ server = shinyServer(function(input, output) {
 )
 ```
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
 
 ## Long Straddle Analysis
 
@@ -196,18 +190,9 @@ What effect do you think stock volatility has on the long straddle?
 
 >- Since the long straddle benefits from actual volatility being higher than what the market expected, you can potentially earn more (or lost more) if the stock's volatility is greater (volatility of volatility).
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div>
 
 ## Short Straddle
 
 The person who takes the other side of the long straddle, own a short straddle.  Since derivatives are *zero-sum games*, the payoff/profit on the short straddle is exactly the opposite (-1 times) the payoff/profit on the long straddle.
 
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div>
 
-## Credits and Collaboration
-
-Click the following links to see the [code](https://github.com/FinancialMarkets/5MinuteFinance/blob/master/Options/option_straddle/option_straddle.Rmd), [authors of this presentation](https://github.com/FinancialMarkets/5MinuteFinance/blame/master/Options/option_straddle/option_straddle.Rmd), and [all the collaborators who have contributed to 5-Minute Finance](https://github.com/FinancialMarkets/5MinuteFinance/graphs/contributors).
-
-If you would like to make any additions or corrections to this presentation, visit our [GitHub repository page](https://github.com/FinancialMarkets/5MinuteFinance#how-to-contribute) to learn more about how to contribute.
-
-<div class="MIfooter"><img src="mi.png" style="height:50px;"></div> 
